@@ -4,6 +4,21 @@ import { supabaseClient } from '@/lib/supabase'
 import OpenRouterClient from '@/lib/openrouter'
 import { ConsensusAnalyzer } from '@/lib/consensus-analyzer'
 
+// Helper function to get OpenRouter API key from environment or headers
+function getOpenRouterApiKey(request?: NextRequest): string | null {
+  // First try environment variable (for production)
+  if (process.env.OPENROUTER_API_KEY) {
+    return process.env.OPENROUTER_API_KEY
+  }
+  
+  // Fall back to request headers (for development with settings page)
+  if (request?.headers.get('X-OpenRouter-API-Key')) {
+    return request.headers.get('X-OpenRouter-API-Key')
+  }
+  
+  return null
+}
+
 // Validation schemas
 const PromptRequestSchema = z.object({
   text: z.string().min(1, 'Prompt text is required').max(1000, 'Prompt too long'),
@@ -19,10 +34,10 @@ export async function POST(request: NextRequest) {
     const { text, modelIds } = PromptRequestSchema.parse(body)
     
     // Get OpenRouter API key
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY
+    const openRouterApiKey = getOpenRouterApiKey(request)
     if (!openRouterApiKey) {
       return NextResponse.json(
-        { error: 'OpenRouter API key is not configured.' },
+        { error: 'OpenRouter API key is not configured. Please set it in environment variables or via the settings page.' },
         { status: 500 }
       )
     }
@@ -125,11 +140,16 @@ export async function POST(request: NextRequest) {
         group_name: group.groupName,
         count: group.count,
         percentage: group.percentage,
-        color: group.color,
-        models: group.models
+        color: group.color
+        // Note: models field removed temporarily due to database schema mismatch
       }))
       
-      savedConsensusGroups = await supabaseClient.saveConsensusGroups(consensusGroupsToSave)
+      try {
+        savedConsensusGroups = await supabaseClient.saveConsensusGroups(consensusGroupsToSave)
+      } catch (error) {
+        console.error('Failed to save consensus groups, continuing without saving:', error)
+        // Continue without saving consensus groups to database
+      }
     }
 
     // Generate insights
@@ -149,6 +169,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error processing prompt:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

@@ -3,6 +3,21 @@ import { z } from 'zod'
 import { supabaseClient } from '@/lib/supabase'
 import OpenRouterClient from '@/lib/openrouter'
 
+// Helper function to get OpenRouter API key from environment or headers
+function getOpenRouterApiKey(request?: NextRequest): string | null {
+  // First try environment variable (for production)
+  if (process.env.OPENROUTER_API_KEY) {
+    return process.env.OPENROUTER_API_KEY
+  }
+  
+  // Fall back to request headers (for development with settings page)
+  if (request?.headers.get('X-OpenRouter-API-Key')) {
+    return request.headers.get('X-OpenRouter-API-Key')
+  }
+  
+  return null
+}
+
 // Validation schemas
 const UpdateModelSchema = z.object({
   id: z.string().uuid(),
@@ -33,12 +48,12 @@ export async function GET() {
 }
 
 // POST: Sync models from OpenRouter
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY
+    const openRouterApiKey = getOpenRouterApiKey(request)
     if (!openRouterApiKey) {
       return NextResponse.json(
-        { error: 'OpenRouter API key is not configured.' },
+        { error: 'OpenRouter API key is not configured. Please set it in environment variables or via the settings page.' },
         { status: 500 }
       )
     }

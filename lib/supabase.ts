@@ -45,7 +45,7 @@ export interface ConsensusGroup {
   count: number
   percentage: number
   color: string
-  models: string[]
+  models?: string[]  // Optional since database doesn't have this column yet
   created_at: string
 }
 

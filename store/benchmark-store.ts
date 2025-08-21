@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { ConsensusGroup, ConsensusAnalysis } from '@/lib/consensus-analyzer'
+import { createAuthHeaders } from '@/lib/credentials'
 
 interface BenchmarkResponse {
   model: {
@@ -124,9 +125,10 @@ export const useBenchmarkStore = create<BenchmarkState>()(
         })
 
         try {
+          const headers = createAuthHeaders({ 'Content-Type': 'application/json' })
           const response = await fetch('/api/prompt', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify({
               text: prompt,
               modelIds
@@ -161,7 +163,8 @@ export const useBenchmarkStore = create<BenchmarkState>()(
 
       loadHistory: async () => {
         try {
-          const response = await fetch('/api/prompt')
+          const headers = createAuthHeaders()
+          const response = await fetch('/api/prompt', { headers })
           const data = await response.json()
 
           if (response.ok) {
@@ -176,7 +179,8 @@ export const useBenchmarkStore = create<BenchmarkState>()(
         set({ isProcessing: true, error: null })
 
         try {
-          const response = await fetch(`/api/prompt?id=${promptId}`)
+          const headers = createAuthHeaders()
+          const response = await fetch(`/api/prompt?id=${promptId}`, { headers })
           const data = await response.json()
 
           if (!response.ok) {

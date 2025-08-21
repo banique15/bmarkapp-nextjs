@@ -79,9 +79,9 @@ export class OpenRouterClient {
     const startTime = Date.now()
     
     const {
-      maxTokens = 10,
+      maxTokens = 50,
       temperature = 0.7,
-      systemPrompt = 'You are a helpful assistant. Respond with a single word only.',
+      systemPrompt = 'You are a helpful assistant. Please provide a clear, concise response to the user\'s question.',
       timeout = 30000
     } = options
 
@@ -119,8 +119,16 @@ export class OpenRouterClient {
       clearTimeout(timeoutId)
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error(`OpenRouter API error (${response.status}): ${errorData.error || response.statusText}`)
+        const errorText = await response.text().catch(() => 'Unknown error')
+        console.error('OpenRouter error response:', response.status, errorText)
+        let errorMessage = errorText
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMessage = errorData.error?.message || errorData.error || errorText
+        } catch (e) {
+          // errorText is already set
+        }
+        throw new Error(`OpenRouter API error (${response.status}): ${errorMessage}`)
       }
       
       const data: CompletionResponse = await response.json()

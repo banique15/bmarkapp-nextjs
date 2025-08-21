@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { Model } from '@/lib/supabase'
+import { createAuthHeaders } from '@/lib/credentials'
 
 interface ModelsState {
   models: Model[]
@@ -168,14 +169,18 @@ export const useModelsStore = create<ModelsState>()(
           set({ isLoading: true, error: null })
           
           try {
-            const response = await fetch('/api/models', { method: 'POST' })
+            const headers = createAuthHeaders({ 'Content-Type': 'application/json' })
+            const response = await fetch('/api/models', {
+              method: 'POST',
+              headers
+            })
             const data = await response.json()
             
             if (!response.ok) {
               throw new Error(data.error || 'Failed to sync models')
             }
             
-            set({ 
+            set({
               models: data.models,
               selectedModelIds: data.models.filter((m: Model) => m.enabled).map((m: Model) => m.id)
             })
@@ -191,9 +196,10 @@ export const useModelsStore = create<ModelsState>()(
           get().toggleModel(modelId)
           
           try {
+            const headers = createAuthHeaders({ 'Content-Type': 'application/json' })
             const response = await fetch('/api/models', {
               method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
+              headers,
               body: JSON.stringify({ id: modelId, enabled })
             })
             

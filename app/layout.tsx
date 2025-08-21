@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   description: 'Compare single-word responses from multiple LLMs and visualize their consensus',
   keywords: ['LLM', 'AI', 'benchmark', 'consensus', 'OpenRouter', 'machine learning'],
   authors: [{ name: 'LLM Benchmark Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'LLM Consensus Benchmark',
@@ -23,6 +22,11 @@ export const metadata: Metadata = {
     title: 'LLM Consensus Benchmark',
     description: 'Compare single-word responses from multiple LLMs and visualize their consensus',
   }
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
@@ -55,12 +59,6 @@ export default function RootLayout({
                       className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                     >
                       History
-                    </a>
-                    <a
-                      href="/docs"
-                      className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                    >
-                      Documentation
                     </a>
                     <a
                       href="/settings"
