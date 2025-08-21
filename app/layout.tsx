@@ -61,6 +61,12 @@ export default function RootLayout({
                       History
                     </a>
                     <a
+                      href="/setup"
+                      className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      Setup
+                    </a>
+                    <a
                       href="/settings"
                       className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                     >

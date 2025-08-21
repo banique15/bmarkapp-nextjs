@@ -1,6 +1,7 @@
 {
   "/history/page": "app/history/page.js",
-  "/api/prompt/route": "app/api/prompt/route.js",
+  "/api/models/route": "app/api/models/route.js",
   "/settings/page": "app/settings/page.js",
+  "/setup/page": "app/setup/page.js",
   "/page": "app/page.js"
 }
