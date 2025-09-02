@@ -100,7 +100,7 @@ BMarkApp-NextJS/
 │   └── consensus/                # Consensus visualization
 ├── lib/                          # Utilities and configurations
 │   ├── supabase.ts              # Enhanced Supabase client
-│   ├── openrouter.ts            # Enhanced OpenRouter client
+│   ├── vercel-ai-gateway.ts     # Vercel AI Gateway client
 │   ├── consensus-analyzer.ts     # Improved consensus logic
 │   └── utils.ts                 # Utility functions
 ├── store/                        # State management
@@ -150,7 +150,7 @@ BMarkApp-NextJS/
 
 1. **Models Store** (`store/models-store.ts`):
    - Model selection and filtering
-   - Sync with OpenRouter
+   - Sync with Vercel AI Gateway
    - Optimistic updates
 
 2. **Benchmark Store** (`store/benchmark-store.ts`):
@@ -171,7 +171,7 @@ BMarkApp-NextJS/
 
 1. **`/api/models`**:
    - GET: Fetch all models
-   - POST: Sync with OpenRouter
+   - POST: Sync with Vercel AI Gateway
    - PUT: Update model status
 
 2. **`/api/prompt`**:
@@ -235,7 +235,7 @@ npm install --save-dev jest-environment-jsdom
 2. **Configure environment variables**:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `OPENROUTER_API_KEY`
+   - `VERCEL_AI_GATEWAY_KEY`
 
 3. **Deploy**: Automatic deployment on push
 

@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseClient } from '@/lib/supabase'
-import OpenRouterClient from '@/lib/openrouter'
+import VercelAIGatewayClient from '@/lib/vercel-ai-gateway'
 import { ConsensusAnalyzer } from '@/lib/consensus-analyzer'
 
-// Helper function to get OpenRouter API key from environment or headers
-function getOpenRouterApiKey(request?: NextRequest): string | null {
+// Helper function to get Vercel AI Gateway API key from environment or headers
+function getVercelAIGatewayApiKey(request?: NextRequest): string | null {
   // First try environment variable (for production)
-  if (process.env.OPENROUTER_API_KEY) {
-    return process.env.OPENROUTER_API_KEY
+  if (process.env.AI_GATEWAY_API_KEY) {
+    return process.env.AI_GATEWAY_API_KEY
   }
   
   // Fall back to request headers (for development with settings page)
-  if (request?.headers.get('X-OpenRouter-API-Key')) {
-    return request.headers.get('X-OpenRouter-API-Key')
+  if (request?.headers.get('X-Vercel-AI-Gateway-Key')) {
+    return request.headers.get('X-Vercel-AI-Gateway-Key')
   }
   
   return null
@@ -22,7 +22,7 @@ function getOpenRouterApiKey(request?: NextRequest): string | null {
 // Validation schemas
 const PromptRequestSchema = z.object({
   text: z.string().min(1, 'Prompt text is required').max(1000, 'Prompt too long'),
-  modelIds: z.array(z.string().uuid()).min(1, 'At least one model must be selected'),
+  modelIds: z.array(z.string().min(1)).min(1, 'At least one model must be selected'),
 })
 
 // POST: Process prompt with selected models
@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const { text, modelIds } = PromptRequestSchema.parse(body)
     
-    // Get OpenRouter API key
-    const openRouterApiKey = getOpenRouterApiKey(request)
-    if (!openRouterApiKey) {
+    // Get Vercel AI Gateway API key
+    const vercelAIGatewayApiKey = getVercelAIGatewayApiKey(request)
+    if (!vercelAIGatewayApiKey) {
       return NextResponse.json(
-        { error: 'OpenRouter API key is not configured. Please set it in environment variables or via the settings page.' },
+        { error: 'Vercel AI Gateway API key is not configured. Please set it in environment variables or via the settings page.' },
         { status: 500 }
       )
     }
@@ -56,15 +56,15 @@ export async function POST(request: NextRequest) {
     // Save prompt to database
     const savedPrompt = await supabaseClient.savePrompt(text)
 
-    // Initialize OpenRouter client
-    const openRouter = new OpenRouterClient(openRouterApiKey)
+    // Initialize Vercel AI Gateway client
+    const aiGateway = new VercelAIGatewayClient(vercelAIGatewayApiKey)
     
-    // Get model IDs for OpenRouter
-    const modelOpenRouterIds = selectedModels.map(model => model.model_id)
+    // Get model IDs for Vercel AI Gateway
+    const modelAIGatewayIds = selectedModels.map(model => model.model_id)
     
     // Send requests to all models in batches
-    const batchResults = await openRouter.batchCompletion(
-      modelOpenRouterIds,
+    const batchResults = await aiGateway.batchCompletion(
+      modelAIGatewayIds,
       text,
       {
         maxTokens: 10,

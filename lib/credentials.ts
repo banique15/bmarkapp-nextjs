@@ -1,6 +1,6 @@
 interface StoredCredentials {
   apiKeys: {
-    openrouter: string
+    vercelAIGateway: string
     supabaseUrl: string
     supabaseKey: string
   }
@@ -24,15 +24,15 @@ export function getStoredCredentials(): StoredCredentials | null {
   }
 }
 
-export function getOpenRouterApiKey(): string | null {
+export function getVercelAIGatewayApiKey(): string | null {
   // First try environment variable (for production)
-  if (process.env.OPENROUTER_API_KEY) {
-    return process.env.OPENROUTER_API_KEY
+  if (process.env.AI_GATEWAY_API_KEY) {
+    return process.env.AI_GATEWAY_API_KEY
   }
   
   // Fall back to localStorage (for development)
   const stored = getStoredCredentials()
-  return stored?.apiKeys?.openrouter || null
+  return stored?.apiKeys?.vercelAIGateway || null
 }
 
 export function getSupabaseCredentials(): { url: string | null; key: string | null } {
@@ -56,8 +56,8 @@ export function createAuthHeaders(additionalHeaders: Record<string, string> = {}
   const stored = getStoredCredentials()
   const headers: Record<string, string> = { ...additionalHeaders }
   
-  if (stored?.apiKeys?.openrouter) {
-    headers['X-OpenRouter-API-Key'] = stored.apiKeys.openrouter
+  if (stored?.apiKeys?.vercelAIGateway) {
+    headers['X-Vercel-AI-Gateway-Key'] = stored.apiKeys.vercelAIGateway
   }
   
   if (stored?.apiKeys?.supabaseUrl) {

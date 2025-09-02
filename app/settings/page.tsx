@@ -9,7 +9,7 @@ import { createAuthHeaders, getStoredCredentials } from '@/lib/credentials'
 
 export default function SettingsPage() {
   const [apiKeys, setApiKeys] = useState({
-    openrouter: '',
+    vercelAIGateway: '',
     supabaseUrl: '',
     supabaseKey: ''
   })
@@ -29,7 +29,14 @@ export default function SettingsPage() {
   useEffect(() => {
     const stored = getStoredCredentials()
     if (stored) {
-      setApiKeys(stored.apiKeys)
+      // Handle migration from openrouter to vercelAIGateway
+      const oldApiKeys = stored.apiKeys as any
+      const migratedApiKeys = {
+        vercelAIGateway: oldApiKeys.vercelAIGateway || oldApiKeys.openrouter || '',
+        supabaseUrl: oldApiKeys.supabaseUrl || '',
+        supabaseKey: oldApiKeys.supabaseKey || ''
+      }
+      setApiKeys(migratedApiKeys)
       setPreferences(stored.preferences)
     }
   }, [])
@@ -52,8 +59,8 @@ export default function SettingsPage() {
     setIsTesting(true)
     setMessage('')
     
-    if (!apiKeys.openrouter) {
-      setMessage('Please enter an OpenRouter API key to test the connection.')
+    if (!apiKeys.vercelAIGateway) {
+      setMessage('Please enter a Vercel AI Gateway API key to test the connection.')
       setIsTesting(false)
       return
     }
@@ -110,18 +117,18 @@ export default function SettingsPage() {
           <CardContent className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                OpenRouter API Key
+                Vercel AI Gateway API Key
                 <Badge variant="destructive" className="ml-2">Required</Badge>
               </label>
               <Input
                 type="password"
-                placeholder="sk-or-..."
-                value={apiKeys.openrouter}
-                onChange={(e) => setApiKeys(prev => ({ ...prev, openrouter: e.target.value }))}
+                placeholder="vag_..."
+                value={apiKeys.vercelAIGateway}
+                onChange={(e) => setApiKeys(prev => ({ ...prev, vercelAIGateway: e.target.value }))}
                 className="font-mono"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Get your API key from <a href="https://openrouter.ai" className="text-blue-600 underline">openrouter.ai</a>
+                Get your API key from <a href="https://vercel.com/ai" className="text-blue-600 underline">Vercel AI Gateway</a>
               </p>
             </div>
 
@@ -281,7 +288,7 @@ export default function SettingsPage() {
           <div className="flex gap-3">
             <Button
               onClick={handleTestConnection}
-              disabled={isTesting || !apiKeys.openrouter}
+              disabled={isTesting || !apiKeys.vercelAIGateway}
               variant="outline"
               className="min-w-[140px]"
             >
