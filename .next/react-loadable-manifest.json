@@ -1,8 +1,8 @@
 {
-  "components/benchmark/consensus-view.tsx -> chart.js/auto": {
-    "id": "components/benchmark/consensus-view.tsx -> chart.js/auto",
+  "app/demo/page.tsx -> @/components/web-components/badge": {
+    "id": "app/demo/page.tsx -> @/components/web-components/badge",
     "files": [
-      "static/chunks/_app-pages-browser_node_modules_chart_js_auto_auto_js.js"
+      "static/chunks/_app-pages-browser_components_web-components_badge_ts.js"
     ]
   }
 }

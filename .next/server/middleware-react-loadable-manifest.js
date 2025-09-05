@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"components/benchmark/consensus-view.tsx -> chart.js/auto\":{\"id\":\"components/benchmark/consensus-view.tsx -> chart.js/auto\",\"files\":[\"static/chunks/_app-pages-browser_node_modules_chart_js_auto_auto_js.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/demo/page.tsx -> @/components/web-components/badge\":{\"id\":\"app/demo/page.tsx -> @/components/web-components/badge\",\"files\":[\"static/chunks/_app-pages-browser_components_web-components_badge_ts.js\"]}}"
